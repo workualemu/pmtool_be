@@ -3,12 +3,15 @@ package com.wojet.pmtool.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.wojet.pmtool.exception.APIException;
 import com.wojet.pmtool.exception.ResourceNotFoundException;
 import com.wojet.pmtool.model.Client;
+import com.wojet.pmtool.payload.ClientDTO;
+import com.wojet.pmtool.payload.ClientResponse;
 import com.wojet.pmtool.repository.ClientRepository;
 
 @Service
@@ -17,32 +20,47 @@ public class ClientServiceImpl implements ClientService {
     @Autowired
     private ClientRepository clientRepository;
 
-    public List<Client> getAllClients(){
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public ClientResponse getAllClients(){
 
         List<Client> clients = clientRepository.findAll();
         if(clients.isEmpty())
             throw new APIException("No client record available !!!");
 
-        return clients;
+        List<ClientDTO> clientDTOs = clients.stream()
+                .map(client -> modelMapper.map(client, ClientDTO.class))
+                .toList();
+
+        ClientResponse clientResponse = new ClientResponse();
+        clientResponse.setContent(clientDTOs);
+
+        return clientResponse;
     }
 
-    public Client getClientById(Long clientId){
+    public ClientDTO getClientById(Long clientId){
         Optional<Client> optionalClient = clientRepository.getClientById(clientId);
         if(!optionalClient.isPresent())
             throw new APIException("Client with Client_ID '" + clientId + "'not found !!!");
 
-        return optionalClient.get();
+        Client client = optionalClient.get();
+        ClientDTO clientDTO = modelMapper.map(client, ClientDTO.class);
+        return clientDTO;
     }
 
-    public Client createClient(Client client){
+    public ClientDTO createClient(ClientDTO clientDTO){
+        Client client = modelMapper.map(clientDTO, Client.class);
         Client existingClient = clientRepository.findByName(client.getName());
         if(existingClient != null) 
             throw new APIException("Client with name '" + client.getName() + "' already exists !!!");
 
-        return clientRepository.save(client);
+        Client savedClient = clientRepository.save(client);
+        return modelMapper.map(savedClient, ClientDTO.class);
     }
 
-    public Client updateClient(Long clientId, Client client){
+    public ClientDTO updateClient(Long clientId, ClientDTO clientDTO){
+        Client client = modelMapper.map(clientDTO, Client.class);
         if (!clientRepository.existsById(clientId)) 
             throw new ResourceNotFoundException("Client", "clientId", clientId);
 
@@ -50,7 +68,9 @@ public class ClientServiceImpl implements ClientService {
             throw new APIException("Client with name '" + client.getName() + "' already exists !!!");
 
         client.setId(clientId);
-        return clientRepository.save(client);
+        Client savedClient = clientRepository.save(client);
+
+        return modelMapper.map(savedClient, ClientDTO.class);
     }
 
     public String deleteClient(Long id){

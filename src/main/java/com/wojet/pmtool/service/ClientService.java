@@ -1,14 +1,15 @@
 package com.wojet.pmtool.service;
 
-import java.util.List;
 import com.wojet.pmtool.model.Client;
+import com.wojet.pmtool.payload.ClientDTO;
+import com.wojet.pmtool.payload.ClientResponse;
 
 public interface ClientService {
 
-    List<Client> getAllClients();
-    Client getClientById(Long clientId);
-    Client createClient(Client client);
-    Client updateClient(Long id, Client client);
+    ClientResponse getAllClients();
+    ClientDTO getClientById(Long clientId);
+    ClientDTO createClient(ClientDTO clientDTO);
+    ClientDTO updateClient(Long id, ClientDTO clientDTO);
     String deleteClient(Long id);
     String deleteAllClients();
 }
