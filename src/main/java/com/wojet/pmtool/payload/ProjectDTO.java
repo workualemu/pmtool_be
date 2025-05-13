@@ -1,37 +1,34 @@
-package com.wojet.pmtool.model;
+package com.wojet.pmtool.payload;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import com.wojet.pmtool.model.Client;
+import com.wojet.pmtool.model.User;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "clients")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
-public class Client {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ProjectDTO {
+
     private Long id;
-
-    @NotBlank
-    @Size(min = 2, message = "Client name must be at least 2 characters long")
-    private String name;
-
+    private String title;
     private String description;
+    private String startDate;
+    private String endDate;
+    private String status; // e.g., "In Progress", "Completed", "On Hold"
 
     // Audit fields
     @Column(nullable = false, updatable = false)
@@ -52,11 +49,8 @@ public class Client {
     @JoinColumn(name = "updated_by")
     @ManyToOne(fetch = FetchType.LAZY)
     private User updatedBy;
-
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Project> projects; 
-
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<User> users;  
-
+    
+    @ManyToOne
+    @Column(name = "client_id", nullable = false)
+    private Client client; 
 }

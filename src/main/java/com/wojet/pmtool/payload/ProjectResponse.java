@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClientResponse {
-    private List<ClientDTO> content;
+public class ProjectResponse {
+    private List<ProjectDTO> content;
     private Integer pageNumber;
     private Integer pageSize;
     private Long totalElements;

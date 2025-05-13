@@ -5,6 +5,10 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.wojet.pmtool.exception.APIException;
@@ -23,9 +27,14 @@ public class ClientServiceImpl implements ClientService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public ClientResponse getAllClients(){
+    public ClientResponse getAllClients(Integer pageNumber, Integer pageSize, String sortBy, String sortDir){
 
-        List<Client> clients = clientRepository.findAll();
+        Sort sort = sortDir.equals("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Page<Client> clientPage = clientRepository.findAll(pageable);
+
+        List<Client> clients = clientPage.getContent();
         if(clients.isEmpty())
             throw new APIException("No client record available !!!");
 
@@ -35,6 +44,11 @@ public class ClientServiceImpl implements ClientService {
 
         ClientResponse clientResponse = new ClientResponse();
         clientResponse.setContent(clientDTOs);
+        clientResponse.setPageNumber(clientPage.getNumber());
+        clientResponse.setPageSize(clientPage.getSize());
+        clientResponse.setTotalElements(clientPage.getTotalElements());
+        clientResponse.setTotalPages(clientPage.getTotalPages());
+        clientResponse.setLastPage(clientPage.isLast());
 
         return clientResponse;
     }
@@ -73,12 +87,11 @@ public class ClientServiceImpl implements ClientService {
         return modelMapper.map(savedClient, ClientDTO.class);
     }
 
-    public String deleteClient(Long id){
-        if (!clientRepository.existsById(id)) 
-            throw new ResourceNotFoundException("Client", "clientId", id);
-
-        clientRepository.deleteById(id);
-        return "Client with id '" + id + "' deleted successfully !!!";
+    public ClientDTO deleteClient(Long clientId){
+        Client client = clientRepository.findById(clientId).orElseThrow(
+            () -> new ResourceNotFoundException("Client", "clientId", clientId));
+        clientRepository.deleteById(clientId);
+        return modelMapper.map(client, ClientDTO.class);
     }
 
     public String deleteAllClients(){

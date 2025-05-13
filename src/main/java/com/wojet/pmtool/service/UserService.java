@@ -1,11 +1,15 @@
 package com.wojet.pmtool.service;
 
-import com.wojet.pmtool.model.User;
-import com.wojet.pmtool.repository.UserRepository;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.Optional;
+
+import com.wojet.pmtool.model.Client;
+import com.wojet.pmtool.model.User;
+import com.wojet.pmtool.repository.ClientRepository;
+import com.wojet.pmtool.repository.UserRepository;
 
 @Service
 public class UserService {
@@ -14,11 +18,18 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
+    private ClientRepository clientRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder; 
 
     public User registerUser(String email, String password) {
         String encodedPassword = passwordEncoder.encode(password); 
-        User user = new User(email, encodedPassword);
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(encodedPassword);
+        // Client client = clientRepository.findByName("Dama Trade");
+        // user.setClient(client);
         return userRepository.save(user);
     }
 
