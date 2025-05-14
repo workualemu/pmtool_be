@@ -8,7 +8,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -150,32 +152,15 @@ public class AuthController {
         
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        String jwtToken = jwtUtils.generateTokenFromUsername(userDetails);
+        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
         List<String> roles = userDetails.getAuthorities().stream()
             .map(grantedAuthority -> grantedAuthority.getAuthority())
             .toList();
-        LoginResponse loginResponse = new LoginResponse(userDetails.getId(), jwtToken, userDetails.getUsername(), 
+        LoginResponse loginResponse = new LoginResponse(userDetails.getId(), userDetails.getUsername(), 
             roles);
-        return ResponseEntity.ok(loginResponse);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+            .body(loginResponse);
 
     }
     
-    // @PostMapping("/login")
-    // public Map<String, Object> login(@RequestBody Map<String, String> body) {
-    //     String email = body.get("email");
-    //     String password = body.get("password");
-
-    //     return userService.loginUser(email, password)
-    //         .map(user -> {
-    //             Map<String, Object> response = new HashMap<>();
-    //             response.put("message", "Login successful!");
-    //             response.put("token", "dummy-token-" + user.getId()); // Temporary token
-    //             return response;
-    //         })
-    //         .orElseGet(() -> {
-    //             Map<String, Object> error = new HashMap<>();
-    //             error.put("error", "Invalid credentials");
-    //             return error;
-    //         });
-    // }
 }
