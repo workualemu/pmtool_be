@@ -9,6 +9,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wojet.pmtool.model.Client;
+import com.wojet.pmtool.model.Project;
 import com.wojet.pmtool.model.User;
 
 import lombok.Data;
@@ -20,32 +22,48 @@ public class UserDetailsImpl implements UserDetails{
     private static final long serialVersionUID = 1L;
 
     private Long id;
-    private String username;
     private String email;
+    private String firstName;
+    private String lastName;
+    private Long clientId;
+    private String clientName;
+    private Long recentProjectId;
 
     @JsonIgnore
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String username, String email, String password,
-            Collection<? extends GrantedAuthority> authorities) {
+    public UserDetailsImpl(Long id, String email, String password, String firstName, String lastName, 
+            Collection<? extends GrantedAuthority> authorities,
+            Long clientId, String clientName, Long recentProjectId) {
         this.id = id;
-        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.authorities = authorities;
+        this.clientId = clientId;
+        this.clientName = clientName;
+        this.recentProjectId = recentProjectId;
     }
 
     public static UserDetailsImpl build(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRoleName().name()))
                 .collect(Collectors.toList());
+        Client client = user.getClient();
+        Project recentProject = user.getRecentProject();
         return new UserDetailsImpl(
                 user.getId(), 
                 user.getEmail(), 
-                user.getEmail(), 
                 user.getPassword(),
-                authorities);
+                user.getFirstName(), 
+                user.getLastName(), 
+                authorities,
+                client==null ? null : client.getId(),
+                client==null ? null : client.getName(),
+                recentProject==null ? null : recentProject.getId()
+            );
     }
 
     @Override
@@ -57,8 +75,7 @@ public class UserDetailsImpl implements UserDetails{
     public String getPassword() {
         return password;
     }
-
-    @Override
+    
     public String getUsername() {
         return email;
     }
@@ -82,7 +99,7 @@ public class UserDetailsImpl implements UserDetails{
 
     @Override
     public String toString() {
-        return "UserDetailsImpl [id=" + id + ", username=" + username + ", email=" + email + ", password=" + password
+        return "UserDetailsImpl [id=" + id + ", first name=" + firstName + ", last name=" + lastName + ", email=" + email + ", password=" + password
                 + ", authorities=" + authorities + "]";
     }
 

@@ -1,4 +1,5 @@
 package com.wojet.pmtool.security.jwt;
+
 import java.security.Key;
 import java.util.Date;
 
@@ -26,29 +27,19 @@ import jakarta.servlet.http.HttpServletRequest;
 @Component
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
-    
+
     @Value("${spring.app.jwt.jwtSecret}")
     private String jwtSecret;
 
     @Value("${spring.app.jwt.expirationMs}")
     private int jwtExpirationMs;
-    
+
     @Value("${spring.app.jwtCookieName}")
     private String jwtCookie;
 
-    // public String getJwtFromHeader(HttpServletRequest request){
-    //     String bearerToken = request.getHeader("Authorization");
-
-    //     logger.debug("Authorization header: {}", bearerToken);
-    //     if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-    //         return bearerToken.substring(7);
-    //     }
-    //     return null;
-    // }
-
     public String getJwtFromCookies(HttpServletRequest request) {
         Cookie cookie = WebUtils.getCookie(request, jwtCookie);
-        if(cookie != null) {
+        if (cookie != null) {
             return cookie.getValue();
         } else {
             return null;
@@ -58,17 +49,28 @@ public class JwtUtils {
     public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
         String jwt = generateTokenFromUsername(userPrincipal.getUsername());
         ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt)
-            .path("/api")
-            .maxAge(24 * 60 * 60)
-            .httpOnly(false)
-            .secure(false)
-            .sameSite("None")
-            .build();
+                .path("/api")
+                .domain("localhost")
+                .maxAge(24 * 60 * 60)
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .build();
         return cookie;
     }
 
+    public ResponseCookie getCleanJwtCookie() {
+        return ResponseCookie.from(jwtCookie, null)
+                .path("/api")
+                .domain("localhost")
+                .maxAge(0)
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .build();
+    }
+
     public String generateTokenFromUsername(String userName) {
-        // String userName = userDetails.getUsername();
         return Jwts.builder()
                 .subject(userName)
                 .issuedAt(new Date())
@@ -81,8 +83,8 @@ public class JwtUtils {
         try {
             System.out.println("Validate");
             Jwts.parser()
-                .verifyWith((SecretKey)key())
-                .build().parseSignedClaims(authToken);
+                    .verifyWith((SecretKey) key())
+                    .build().parseSignedClaims(authToken);
             return true;
         } catch (MalformedJwtException e) {
             logger.error("Cannot set user authentication: {}", e);
@@ -92,22 +94,21 @@ public class JwtUtils {
             logger.error("Jwt token is not supported: {}", e);
         } catch (IllegalArgumentException e) {
             logger.error("Jwt token illegal argument: {}", e);
-        } 
-        return false; 
+        }
+        return false;
     }
 
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parser()
-            .verifyWith((SecretKey)key())
-            .build().parseSignedClaims(token)
-            .getPayload()
-            .getSubject();  
+                .verifyWith((SecretKey) key())
+                .build().parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
     }
 
     public Key key() {
         return Keys.hmacShaKeyFor(
-            Decoders.BASE64.decode(jwtSecret)
-        );
+                Decoders.BASE64.decode(jwtSecret));
     }
 
 }

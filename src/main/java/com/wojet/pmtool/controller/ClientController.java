@@ -20,7 +20,7 @@ import com.wojet.pmtool.service.ClientService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/system")
 public class ClientController {
 
     @Autowired
@@ -28,17 +28,16 @@ public class ClientController {
 
     @GetMapping("/clients")
     public ClientResponse getAllClients(
-        @RequestParam(name = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
-        @RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize,
-        @RequestParam(name = "sortBy", defaultValue = "id", required = false) String sortBy,
-        @RequestParam(name = "sortDir", defaultValue = "asc", required = false) String sortDir
-    ) {
+            @RequestParam(name = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = "id", required = false) String sortBy,
+            @RequestParam(name = "sortDir", defaultValue = "asc", required = false) String sortDir) {
         return clientService.getAllClients(pageNumber, pageSize, sortBy, sortDir);
     }
 
     @GetMapping("/clients/{clientId}")
     public ResponseEntity<ClientDTO> getClient(@PathVariable Long clientId) {
-        ClientDTO clinetDTO =  clientService.getClientById(clientId);
+        ClientDTO clinetDTO = clientService.getClientById(clientId);
         return new ResponseEntity<>(clinetDTO, HttpStatus.OK);
     }
 
@@ -49,14 +48,15 @@ public class ClientController {
     }
 
     @PutMapping("/clients/{clientId}")
-    public ResponseEntity<ClientDTO> updateClient(@Valid @PathVariable Long clientId, @RequestBody ClientDTO clientDTO) {
+    public ResponseEntity<ClientDTO> updateClient(@Valid @PathVariable Long clientId,
+            @RequestBody ClientDTO clientDTO) {
         ClientDTO updatedClient = clientService.updateClient(clientId, clientDTO);
         return new ResponseEntity<>(updatedClient, HttpStatus.OK);
     }
-    
+
     @DeleteMapping("/clients/{clientId}")
     public ResponseEntity<ClientDTO> deleteClient(@PathVariable Long clientId) {
-        ClientDTO deletedClient =  clientService.deleteClient(clientId);
+        ClientDTO deletedClient = clientService.deleteClient(clientId);
         return new ResponseEntity<>(deletedClient, HttpStatus.OK);
     }
 

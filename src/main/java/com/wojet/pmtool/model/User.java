@@ -3,6 +3,8 @@ package com.wojet.pmtool.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,10 +45,16 @@ public class User {
     @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
 
+    
+    private String firstName;
+
+    private String lastName;
+
     @OneToOne (mappedBy = "user")
     private Profile profile;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
@@ -76,6 +84,11 @@ public class User {
         this.email = email;
         this.password = password;
         this.client = client;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31;
     }
 
 }

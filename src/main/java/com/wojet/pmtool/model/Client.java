@@ -9,6 +9,8 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.wojet.pmtool.model.audit.Auditable;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -22,7 +24,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class Client {
+public class Client extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,30 +35,20 @@ public class Client {
 
     private String description;
 
-    // Audit fields
-    @Column(nullable = false, updatable = false)
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-    
-
-    @CreatedBy
-    @JoinColumn(name = "created_by", updatable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User createdBy;
-
-    @LastModifiedBy
-    @JoinColumn(name = "updated_by")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User updatedBy;
-
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Project> projects; 
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<User> users;  
+
+    @Override
+    public int hashCode() {
+        return 31;
+    }
+
+    @Override
+    public String toString() {
+        return "Client{" + "ID=" + getId() + " Name:" + getName() + " Description: " + getDescription() + '}';
+    }
 
 }

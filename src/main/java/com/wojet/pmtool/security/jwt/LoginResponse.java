@@ -12,5 +12,10 @@ import lombok.NoArgsConstructor;
 public class LoginResponse {
     Long id;
     private String email;
+    private String firstName;
+    private String lastName;
     private List<String> roles;
+    private Long clientId;
+    private String clientName;
+    private Long recentProjectId;
 }

@@ -41,6 +41,8 @@ import com.wojet.pmtool.security.jwt.SignupRequest;
 import com.wojet.pmtool.security.service.UserDetailsImpl;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -136,6 +138,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
         Authentication authentication;
+        System.out.println("LOGIN ATTEMPT: " + loginRequest.getEmail());
         try {
             authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -156,10 +159,29 @@ public class AuthController {
         List<String> roles = userDetails.getAuthorities().stream()
             .map(grantedAuthority -> grantedAuthority.getAuthority())
             .toList();
-        LoginResponse loginResponse = new LoginResponse(userDetails.getId(), userDetails.getUsername(), 
-            roles);
+        LoginResponse loginResponse = new LoginResponse(userDetails.getId(),  userDetails.getUsername(), userDetails.getFirstName(), 
+            userDetails.getLastName(), roles, userDetails.getClientId(), userDetails.getClientName(), userDetails.getRecentProjectId());
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
             .body(loginResponse);
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<?> currentUser(Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
+            .map(grantedAuthority -> grantedAuthority.getAuthority())
+            .toList();
+        LoginResponse loginResponse = new LoginResponse(userDetails.getId(), userDetails.getUsername(), userDetails.getFirstName(), 
+            userDetails.getLastName(), roles, userDetails.getClientId(), userDetails.getClientName(), userDetails.getRecentProjectId());
+        return ResponseEntity.ok()
+            .body(loginResponse);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser() {
+        ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
+            .body(new MessageResponse("You've been signed out!"));
 
     }
     
