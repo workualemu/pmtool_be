@@ -33,7 +33,7 @@ import lombok.NoArgsConstructor;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank
@@ -45,12 +45,11 @@ public class User {
     @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
 
-    
     private String firstName;
 
     private String lastName;
 
-    @OneToOne (mappedBy = "user")
+    @OneToOne(mappedBy = "user")
     private Profile profile;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -59,22 +58,17 @@ public class User {
     private Client client;
 
     @ManyToMany
-    @JoinTable(name = "user_teams",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "team_id"))
-    private Set<Team> teams = new HashSet<>(); 
-    
+    @JoinTable(name = "user_teams", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "team_id"))
+    private Set<Team> teams = new HashSet<>();
+
     @ManyToOne
     @JoinColumn(name = "recent_project_id")
     private Project recentProject;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, 
-                fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
-    
+
     public User(String email, String password) {
         this.email = email;
         this.password = password;
@@ -84,6 +78,10 @@ public class User {
         this.email = email;
         this.password = password;
         this.client = client;
+    }
+
+    public String getFullName() {
+        return (firstName != null ? firstName : "") + " " + (lastName != null ? lastName : "");
     }
 
     @Override

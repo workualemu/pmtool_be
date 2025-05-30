@@ -1,6 +1,7 @@
 package com.wojet.pmtool.service;
 
-import java.time.LocalDateTime;
+import static com.wojet.pmtool.util.AuditUtil.*;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -21,8 +22,6 @@ import com.wojet.pmtool.payload.ClientDTO;
 import com.wojet.pmtool.payload.ClientResponse;
 import com.wojet.pmtool.repository.ClientRepository;
 
-import jakarta.annotation.PostConstruct;
-
 @Service
 public class ClientServiceImpl implements ClientService {
 
@@ -35,22 +34,7 @@ public class ClientServiceImpl implements ClientService {
     @Autowired
     private ModelMapper modelMapper;
 
-    @PostConstruct
-    public void configureModelMapper() {
-        modelMapper.typeMap(Client.class, ClientDTO.class).addMappings(mapper -> {
-            mapper.map(src -> getUserIdSafe(src.getCreatedBy()), ClientDTO::setCreatedBy);
-            mapper.map(src -> getUserIdSafe(src.getUpdatedBy()), ClientDTO::setUpdatedBy);
-        });
-
-        modelMapper.typeMap(ClientDTO.class, Client.class).addMappings(mapper -> {
-            mapper.skip(Client::setCreatedBy);
-            mapper.skip(Client::setUpdatedBy);
-        });
-    }
-
-    private Long getUserIdSafe(User user) {
-        return (user != null) ? user.getId() : null;
-    }
+    ModelMapper mapper = new ModelMapper();
 
     public ClientResponse getAllClients(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
 
@@ -94,13 +78,7 @@ public class ClientServiceImpl implements ClientService {
         if (existingClient != null)
             throw new APIException("Client with name '" + client.getName() + "' already exists !!!");
 
-        User currentUser = auditorAware.getCurrentAuditor()
-                .orElseThrow(() -> new RuntimeException("No authenticated user"));
-
-        client.setCreatedBy(currentUser);
-        client.setUpdatedBy(currentUser);
-        client.setCreatedAt(LocalDateTime.now());
-        client.setUpdatedAt(LocalDateTime.now());
+        applyAuditOnCreate(client, auditorAware);
 
         Client savedClient = clientRepository.save(client);
         return modelMapper.map(savedClient, ClientDTO.class);
@@ -114,15 +92,9 @@ public class ClientServiceImpl implements ClientService {
         if (clientRepository.existsByNameIgnoreCaseAndIdNot(clientDTO.getClientName(), clientId))
             throw new APIException("Client with name '" + clientDTO.getClientName() + "' already exists !!!");
 
-        User currentUser = auditorAware.getCurrentAuditor()
-                .orElseThrow(() -> new RuntimeException("No authenticated user"));
-
         Client client = modelMapper.map(clientDTO, Client.class);
         client.setId(clientId);
-        client.setCreatedBy(existingClient.getCreatedBy());
-        client.setCreatedAt(existingClient.getCreatedAt());
-        client.setUpdatedBy(currentUser);
-        client.setUpdatedAt(LocalDateTime.now());
+        applyAuditOnUpdate(client, existingClient, auditorAware);
 
         Client savedClient = clientRepository.save(client);
         return modelMapper.map(savedClient, ClientDTO.class);

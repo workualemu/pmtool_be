@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.wojet.pmtool.model.Client;
 import com.wojet.pmtool.model.User;
-import com.wojet.pmtool.repository.ClientRepository;
 import com.wojet.pmtool.repository.UserRepository;
 
 @Service
@@ -16,9 +14,6 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private ClientRepository clientRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder; 
