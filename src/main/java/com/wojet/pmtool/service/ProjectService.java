@@ -1,15 +1,15 @@
 package com.wojet.pmtool.service;
 
-import com.wojet.pmtool.model.Project;
+import com.wojet.pmtool.payload.PagedResponse;
 import com.wojet.pmtool.payload.ProjectDTO;
 
 public interface ProjectService {
 
-    // ProjectResponse getAllProjects(Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
+    PagedResponse<ProjectDTO> getAll(Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
+    PagedResponse<ProjectDTO> getProjectsByClient(Long clientId, Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
     // ProjectDTO getProjectById(Long projectId);
-    // public ProductRe
-    public ProjectDTO addProject(Long clientId, Project project);
-    // ProjectDTO updateProject(Long id, ProjectDTO projectDTO);
-    // ProjectDTO deleteProject(Long id);
-    // String deleteAllProjects();
+    ProjectDTO createProject(Long clientId, ProjectDTO projectDTO);
+    ProjectDTO updateProject(Long id, ProjectDTO projectDTO);
+    ProjectDTO deleteById(Long id);
+    String deleteByClientId(Long clientId);
 }

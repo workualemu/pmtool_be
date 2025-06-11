@@ -1,15 +1,18 @@
 package com.wojet.pmtool.config;
 
-import com.wojet.pmtool.model.Client;
-import com.wojet.pmtool.model.User;
-import com.wojet.pmtool.model.audit.Auditable;
-import com.wojet.pmtool.payload.ClientDTO;
-import com.wojet.pmtool.payload.audit.AuditableDTO;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.wojet.pmtool.model.Client;
+import com.wojet.pmtool.model.Project;
+import com.wojet.pmtool.model.User;
+import com.wojet.pmtool.model.audit.Auditable;
+import com.wojet.pmtool.payload.ClientDTO;
+import com.wojet.pmtool.payload.ProjectDTO;
+import com.wojet.pmtool.payload.audit.AuditableDTO;
 
 @Configuration
 public class ModelMapperConfig {
@@ -59,6 +62,7 @@ public class ModelMapperConfig {
     });
 
     registerAuditMappings(mapper, Client.class, ClientDTO.class);
+    registerAuditMappings(mapper, Project.class, ProjectDTO.class);
 
     mapper.addConverter(userToIdConverter, User.class, Long.class);
     return mapper;

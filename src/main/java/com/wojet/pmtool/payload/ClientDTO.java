@@ -16,11 +16,4 @@ public class ClientDTO extends AuditableDTO {
     private Long clientId;
     private String clientName;
     private String description;
-    // private LocalDateTime createdAt;
-    // private LocalDateTime updatedAt;
-    // private Long createdBy;
-    // private Long updatedBy;
-    // private String createdByName;
-    // private String updatedByName;
-
 }

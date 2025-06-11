@@ -25,9 +25,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Client extends Auditable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    
 
     @NotBlank
     @Size(min = 2, message = "Client name must be at least 2 characters long")

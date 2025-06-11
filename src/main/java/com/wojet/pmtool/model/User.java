@@ -1,6 +1,7 @@
 package com.wojet.pmtool.model;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -60,6 +61,9 @@ public class User {
     @ManyToMany
     @JoinTable(name = "user_teams", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "team_id"))
     private Set<Team> teams = new HashSet<>();
+
+    @ManyToMany(mappedBy = "members")
+    private List<Project> projects;
 
     @ManyToOne
     @JoinColumn(name = "recent_project_id")
