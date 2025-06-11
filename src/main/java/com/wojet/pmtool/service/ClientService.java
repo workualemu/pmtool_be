@@ -1,11 +1,11 @@
 package com.wojet.pmtool.service;
 
 import com.wojet.pmtool.payload.ClientDTO;
-import com.wojet.pmtool.payload.ClientResponse;
+import com.wojet.pmtool.payload.PagedResponse;
 
 public interface ClientService {
 
-    ClientResponse getAllClients(Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
+    PagedResponse<ClientDTO> getAllClients(Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
     ClientDTO getClientById(Long clientId);
     ClientDTO createClient(ClientDTO clientDTO);
     ClientDTO updateClient(Long id, ClientDTO clientDTO);

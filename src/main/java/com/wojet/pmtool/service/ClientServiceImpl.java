@@ -20,6 +20,8 @@ import com.wojet.pmtool.model.Client;
 import com.wojet.pmtool.model.User;
 import com.wojet.pmtool.payload.ClientDTO;
 import com.wojet.pmtool.payload.ClientResponse;
+import com.wojet.pmtool.payload.PagedResponse;
+import com.wojet.pmtool.payload.ProjectDTO;
 import com.wojet.pmtool.repository.ClientRepository;
 
 @Service
@@ -36,7 +38,7 @@ public class ClientServiceImpl implements ClientService {
 
     ModelMapper mapper = new ModelMapper();
 
-    public ClientResponse getAllClients(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
+    public PagedResponse<ClientDTO> getAllClients(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
 
         Sort sort = sortDir.equals("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
@@ -51,7 +53,7 @@ public class ClientServiceImpl implements ClientService {
                 .map(client -> modelMapper.map(client, ClientDTO.class))
                 .toList();
 
-        ClientResponse clientResponse = new ClientResponse();
+        PagedResponse<ClientDTO> clientResponse = new PagedResponse<>();
         clientResponse.setContent(clientDTOs);
         clientResponse.setPageNumber(clientPage.getNumber());
         clientResponse.setPageSize(clientPage.getSize());

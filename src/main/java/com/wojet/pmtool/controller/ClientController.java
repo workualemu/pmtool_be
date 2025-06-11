@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wojet.pmtool.payload.ClientDTO;
-import com.wojet.pmtool.payload.ClientResponse;
+import com.wojet.pmtool.payload.PagedResponse;
 import com.wojet.pmtool.service.ClientService;
 
 import jakarta.validation.Valid;
@@ -27,7 +27,7 @@ public class ClientController {
     private ClientService clientService;
 
     @GetMapping("/clients")
-    public ClientResponse getAllClients(
+    public PagedResponse<ClientDTO> getAllClients(
             @RequestParam(name = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
             @RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize,
             @RequestParam(name = "sortBy", defaultValue = "id", required = false) String sortBy,
