@@ -41,4 +41,13 @@ public class Client extends Auditable {
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<User> users;  
 
+    @Override
+    public int hashCode() {
+        return 31;
+    }
+
+    @Override
+    public String toString() {
+        return "Client{" + "ID=" + getId() + " Name:" + getName() + " Description: " + getDescription() + '}';
+    }
 }
