@@ -19,13 +19,13 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wojet.pmtool.exception.APIException;
-import com.wojet.pmtool.exception.ResourceNotFoundException;
 import com.wojet.pmtool.model.AppRole;
 import com.wojet.pmtool.model.Client;
 import com.wojet.pmtool.model.Role;
@@ -41,7 +41,6 @@ import com.wojet.pmtool.security.jwt.SignupRequest;
 import com.wojet.pmtool.security.service.UserDetailsImpl;
 
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.GetMapping;
 
 
 @CrossOrigin(origins = "http://localhost:5173")
@@ -66,20 +65,6 @@ public class AuthController {
 
     @Autowired
     private ClientRepository clientRepository;
-
-
-    // @PostMapping("/register")
-    // public Map<String, Object> register(@RequestBody Map<String, String> body) {
-    //     String email = body.get("email");
-    //     String password = body.get("password");
-
-    //     User user = userService.registerUser(email, password);
-
-    //     Map<String, Object> response = new HashMap<>();
-    //     response.put("message", "User registered successfully!");
-    //     response.put("userId", user.getId());
-    //     return response;
-    // }
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest) {

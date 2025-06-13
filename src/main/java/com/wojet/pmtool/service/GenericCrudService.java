@@ -30,7 +30,7 @@ public abstract class GenericCrudService<E extends Auditable, // Entity
   protected R repository;
 
   @Autowired
-    private AuditorAware<User> auditorAware;
+  private AuditorAware<User> auditorAware;
 
   // @Autowired
   // protected ModelMapper modelMapper;
@@ -79,16 +79,14 @@ public abstract class GenericCrudService<E extends Auditable, // Entity
   /**
    * Create with extra relationships (like client/project)
    */
-  public D createWithAssociations(D dto, List<Consumer<E>> relationshipSetters) {
+  public D createWithAssociations(D dto, Consumer<E> relationshipSetter) {
     E entity = mapToEntity(dto);
+    applyAuditOnCreate(entity, auditorAware);
+    relationshipSetter.accept(entity);
     if (validateOnCreate(entity)) {
       throw new APIException("Duplicate record!");
     }
-    applyAuditOnCreate(entity, auditorAware);
-    for (Consumer<E> relationshipSetter : relationshipSetters) {
-      relationshipSetter.accept(entity); 
-    }
-    // relationshipSetter.accept(entity); // set client/project/etc.
+    
     return mapToDTO(repository.save(entity));
   }
 
@@ -106,7 +104,7 @@ public abstract class GenericCrudService<E extends Auditable, // Entity
     return mapToDTO(repository.save(entity));
   }
 
-  public D updateWithAssociations(Long id, D dto, List<Consumer<E>> relationshipSetters) {
+  public D updateWithAssociations(Long id, D dto, Consumer<E> relationshipSetter) {
     E existing = repository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Entity", "id", id));
 
@@ -117,9 +115,11 @@ public abstract class GenericCrudService<E extends Auditable, // Entity
     E entity = mapToEntity(dto);
     entity.setId(id);
     applyAuditOnUpdate(entity, existing, auditorAware);
-    for (Consumer<E> relationshipSetter : relationshipSetters) {
-      relationshipSetter.accept(entity);
-    }
+    relationshipSetter.accept(entity);
+
+    // for (Consumer<E> relationshipSetter : relationshipSetters) {
+    // relationshipSetter.accept(entity);
+    // }
     return mapToDTO(repository.save(entity));
   }
 
@@ -129,9 +129,6 @@ public abstract class GenericCrudService<E extends Auditable, // Entity
     repository.deleteById(id);
     return mapToDTO(entity);
   }
-
- 
-
 
   protected abstract E mapToEntity(D dto);
 

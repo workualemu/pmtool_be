@@ -1,6 +1,7 @@
 package com.wojet.pmtool.service;
 
-import static com.wojet.pmtool.util.AuditUtil.*;
+import static com.wojet.pmtool.util.AuditUtil.applyAuditOnCreate;
+import static com.wojet.pmtool.util.AuditUtil.applyAuditOnUpdate;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,9 +20,7 @@ import com.wojet.pmtool.exception.ResourceNotFoundException;
 import com.wojet.pmtool.model.Client;
 import com.wojet.pmtool.model.User;
 import com.wojet.pmtool.payload.ClientDTO;
-import com.wojet.pmtool.payload.ClientResponse;
 import com.wojet.pmtool.payload.PagedResponse;
-import com.wojet.pmtool.payload.ProjectDTO;
 import com.wojet.pmtool.repository.ClientRepository;
 
 @Service

@@ -11,9 +11,14 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClientDTO extends AuditableDTO {
+public class TagDTO extends AuditableDTO {
 
-    private Long clientId;
-    private String clientName;
-    private String description;
+  private Long id;
+  private String label;
+  private String description;
+  private String color;
+  private Long projectId;
+  private String projectTitle;
+  private Long clientId;
+  private String clientName;
 }
