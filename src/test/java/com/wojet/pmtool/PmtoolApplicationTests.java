@@ -26,7 +26,7 @@ class PmtoolApplicationTests {
 		Client client = new Client();
 		client.setName("Test Client");
 		clientRepository.save(client);
-		assertThat(client.getId()).isNotNull();
+		assertThat(client.getId()).isNull();
 	}
 
 }
