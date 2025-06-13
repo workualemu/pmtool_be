@@ -88,9 +88,4 @@ public class User {
         return (firstName != null ? firstName : "") + " " + (lastName != null ? lastName : "");
     }
 
-    @Override
-    public int hashCode() {
-        return 31;
-    }
-
 }

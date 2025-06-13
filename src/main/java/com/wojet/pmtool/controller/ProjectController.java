@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wojet.pmtool.payload.ClientDTO;
 import com.wojet.pmtool.payload.PagedResponse;
 import com.wojet.pmtool.payload.ProjectDTO;
 import com.wojet.pmtool.service.ProjectService;

@@ -14,20 +14,4 @@ public abstract class AuditableDTO {
   private String createdByName;
   private String updatedByName;
 
-  // public String getCreatedByName() {
-  // return createdByName;
-  // }
-
-  // public void setCreatedByName(String createdByName) {
-  // this.createdByName = createdByName;
-  // }
-
-  // public String getUpdatedByName() {
-  // return updatedByName;
-  // }
-
-  // public void setUpdatedByName(String updatedByName) {
-  // this.updatedByName = updatedByName;
-  // }
-
 }

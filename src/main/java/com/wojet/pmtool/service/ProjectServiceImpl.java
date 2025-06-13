@@ -36,17 +36,18 @@ public class ProjectServiceImpl extends GenericCrudService<Project, ProjectDTO, 
     /**
      * Get all projects by client with pagination and sorting
      */
-    public PagedResponse<ProjectDTO> getProjectsByClient(Long clientId, Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
+    public PagedResponse<ProjectDTO> getProjectsByClient(Long clientId, Integer pageNumber, Integer pageSize,
+            String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase("asc")
-            ? Sort.by(sortBy).ascending()
-            : Sort.by(sortBy).descending();
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
         Page<Project> page = projectRepository.findByClientId(clientId, pageable);
 
         List<Project> entities = page.getContent();
         if (entities.isEmpty()) {
-        throw new APIException("No records found!");
+            throw new APIException("No records found!");
         }
 
         List<ProjectDTO> dtos = entities.stream().map(this::mapToDTO).toList();
@@ -61,7 +62,7 @@ public class ProjectServiceImpl extends GenericCrudService<Project, ProjectDTO, 
 
         return response;
     }
-    
+
     /**
      * Create a new project with associated client
      */
@@ -70,8 +71,9 @@ public class ProjectServiceImpl extends GenericCrudService<Project, ProjectDTO, 
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Client", "id", clientId));
 
-        List<Consumer<Project>> associations = List.of(
-                project -> project.setClient(client));
+        Consumer<Project> associations = project -> {
+            project.setClient(client);
+        };
         return createWithAssociations(projectDTO, associations);
     }
 
@@ -86,9 +88,9 @@ public class ProjectServiceImpl extends GenericCrudService<Project, ProjectDTO, 
                 existingProject.getClient().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Client", "id", existingProject.getClient().getId()));
 
-        List<Consumer<Project>> associations = List.of(
-                project -> project.setClient(client)
-        );
+        Consumer<Project> associations = project -> {
+            project.setClient(client);
+        };
 
         return updateWithAssociations(projectId, projectDTO, associations);
     }

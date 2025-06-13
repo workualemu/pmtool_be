@@ -46,5 +46,4 @@ public abstract class Auditable {
     @JoinColumn(name = "updated_by")
     private User updatedBy;
 
-    // Getters and setters (or use Lombok @Getter/@Setter)
 } 
