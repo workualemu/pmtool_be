@@ -1,38 +1,49 @@
-name: Backend CI
+name: Build and Test Backend
 
 on:
   push:
     branches:
-      - main
       - develop
+      - main
   pull_request:
-    branches:
-      - main
-      - develop
 
 jobs:
   build:
-    name: Build and Test Backend
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: pmtool_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/pmtool_test
+      SPRING_DATASOURCE_USERNAME: test
+      SPRING_DATASOURCE_PASSWORD: test
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update # Optional, in case you use update/create
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Java 17
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: "17"
-          distribution: "temurin"
+          distribution: temurin
+          java-version: 17
 
-      - name: Ensure mvnw is executable (safe fallback)
-        run: chmod +x mvnw
+      - name: Make Maven Wrapper executable
+        run: chmod +x ./mvnw
 
-      - name: Build and run tests
-        run: ./mvnw clean verify
-
-      - name: Archive Spring Boot JAR
-        uses: actions/upload-artifact@v4
-        with:
-          name: springboot-jar
-          path: target/*.jar
+      - name: Build and Test with Maven
+        run: ./mvnw clean package
