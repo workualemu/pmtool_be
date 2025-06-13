@@ -28,11 +28,15 @@ public class TagController {
 
     // @GetMapping("/tags")
     // public PagedResponse<TagDTO> getAllProjects(
-    //         @RequestParam(name = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
-    //         @RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize,
-    //         @RequestParam(name = "sortBy", defaultValue = "id", required = false) String sortBy,
-    //         @RequestParam(name = "sortDir", defaultValue = "asc", required = false) String sortDir) {
-    //     return tagService.getAll(pageNumber, pageSize, sortBy, sortDir);
+    // @RequestParam(name = "pageNumber", defaultValue = "0", required = false)
+    // Integer pageNumber,
+    // @RequestParam(name = "pageSize", defaultValue = "10", required = false)
+    // Integer pageSize,
+    // @RequestParam(name = "sortBy", defaultValue = "id", required = false) String
+    // sortBy,
+    // @RequestParam(name = "sortDir", defaultValue = "asc", required = false)
+    // String sortDir) {
+    // return tagService.getAll(pageNumber, pageSize, sortBy, sortDir);
     // }
 
     @GetMapping("/{projectId}/tags")
@@ -67,7 +71,7 @@ public class TagController {
     }
 
     @DeleteMapping("/tags/{projectId}/all")
-    public String deleteAllTagssByProject(@PathVariable Long projectId) {
+    public String deleteAllTagsByProject(@PathVariable Long projectId) {
         return tagService.deleteByProjectId(projectId);
     }
 }
