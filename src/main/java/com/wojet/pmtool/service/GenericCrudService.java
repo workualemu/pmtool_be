@@ -32,8 +32,15 @@ public abstract class GenericCrudService<E extends Auditable, // Entity
   @Autowired
   private AuditorAware<User> auditorAware;
 
-  // @Autowired
-  // protected ModelMapper modelMapper;
+  //for testing purposes
+  public void setAuditorAware(AuditorAware<User> auditorAware) {
+    this.auditorAware = auditorAware;
+  }
+
+  // for testing purposes
+  public void setRepository(R repository) {
+    this.repository = repository;
+  }
 
   public PagedResponse<D> getAll(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
     Sort sort = sortDir.equalsIgnoreCase("asc")
