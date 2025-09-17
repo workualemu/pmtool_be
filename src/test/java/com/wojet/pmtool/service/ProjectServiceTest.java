@@ -37,7 +37,7 @@ class ProjectServiceTest {
   private ModelMapper modelMapper;
 
   @Mock
-  private AuditorAware<User> auditorAware;
+  private AuditorAware<Long> auditorAware;
 
   private Client client;
   private Project project;
@@ -66,11 +66,10 @@ class ProjectServiceTest {
     mockUser.setLastName("User");
     // ... set other fields if needed
 
-    when(auditorAware.getCurrentAuditor()).thenReturn(Optional.of(mockUser));
+    when(auditorAware.getCurrentAuditor()).thenReturn(Optional.of(mockUser.getId()));
 
     projectService.setAuditorAware(auditorAware);
     projectService.setRepository(projectRepository);
-
   }
 
   @Test
