@@ -37,6 +37,15 @@ public class ClientServiceImpl implements ClientService {
 
     ModelMapper mapper = new ModelMapper();
 
+    /**
+     * Get all clients with pagination and sorting
+     *
+     * @param pageNumber the page number to retrieve
+     * @param pageSize   the number of records per page
+     * @param sortBy     the field to sort by
+     * @param sortDir    the direction of sorting (asc or desc)
+     * @return a paginated response containing client DTOs
+     */
     public PagedResponse<ClientDTO> getAllClients(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
 
         Sort sort = sortDir.equals("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
@@ -63,6 +72,12 @@ public class ClientServiceImpl implements ClientService {
         return clientResponse;
     }
 
+    /**
+     * Get a client by its ID
+     *
+     * @param clientId the ID of the client to retrieve
+     * @return the client DTO
+     */
     public ClientDTO getClientById(Long clientId) {
         Optional<Client> optionalClient = clientRepository.getClientById(clientId);
         if (!optionalClient.isPresent())
@@ -73,6 +88,12 @@ public class ClientServiceImpl implements ClientService {
         return clientDTO;
     }
 
+    /**
+     * Get a client by its name
+     *
+     * @param clientDTO the DTO of the client to retrieve
+     * @return the client DTO
+     */
     public ClientDTO createClient(ClientDTO clientDTO) {
         Client client = modelMapper.map(clientDTO, Client.class);
         Client existingClient = clientRepository.findByName(client.getName());
@@ -86,6 +107,13 @@ public class ClientServiceImpl implements ClientService {
 
     }
 
+    /**
+     * Update an existing client
+     *
+     * @param clientId  the ID of the client to update
+     * @param clientDTO the DTO containing updated client information
+     * @return the updated client DTO
+     */
     public ClientDTO updateClient(Long clientId, ClientDTO clientDTO) {
         Client existingClient = clientRepository.findById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Client", "clientId", clientId));
@@ -101,6 +129,12 @@ public class ClientServiceImpl implements ClientService {
         return modelMapper.map(savedClient, ClientDTO.class);
     }
 
+    /**
+     * Delete a client by its ID
+     *
+     * @param clientId the ID of the client to delete
+     * @return the deleted client DTO
+     */
     public ClientDTO deleteClient(Long clientId) {
         Client client = clientRepository.findById(clientId).orElseThrow(
                 () -> new ResourceNotFoundException("Client", "clientId", clientId));
@@ -108,6 +142,11 @@ public class ClientServiceImpl implements ClientService {
         return modelMapper.map(client, ClientDTO.class);
     }
 
+    /**
+     * Delete all clients
+     *
+     * @return a message indicating successful deletion
+     */
     public String deleteAllClients() {
         clientRepository.deleteAll();
         return "All clients deleted successfully !!!";

@@ -4,6 +4,10 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.annotations.ColumnTransformer;
+// import org.hibernate.annotations.JdbcTypeCode;
+// import org.hibernate.type.SqlTypes;
+
 import com.wojet.pmtool.model.audit.Auditable;
 
 import jakarta.persistence.CascadeType;
@@ -22,6 +26,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+// import com.vladmihalcea.hibernate.type.ltree.LTreeType;
+// import com.vladmihalcea.hibernate.type.ltree.LTree;
+// import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "tasks")
@@ -73,7 +81,7 @@ public class Task extends Auditable {
 
   @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private Set<Comment> comments = new HashSet<>();
-  
+
   // Simple Fields
 
   @NotBlank
@@ -116,9 +124,8 @@ public class Task extends Auditable {
   @Column(nullable = false)
   private Boolean isStarred = false;
 
-  // Path (ltree column)
-
-  @Column(columnDefinition = "ltree")
+  @Column(name = "path", columnDefinition = "ltree")
+  @ColumnTransformer(write = "?::ltree", read = "path")
   private String path;
 
 }

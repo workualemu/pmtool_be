@@ -18,7 +18,7 @@ public class ProjectDTO extends AuditableDTO {
     private String description;
     private String startDate;
     private String endDate;
-    private String status; // e.g., "In Progress", "Completed", "On Hold"
+    private String status; 
     private Long clientId;
     private String clientName;
 }
