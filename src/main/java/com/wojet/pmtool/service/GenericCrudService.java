@@ -32,10 +32,10 @@ public abstract class GenericCrudService<E extends Auditable, // Entity
   protected R repository;
 
   @Autowired
-  private AuditorAware<User> auditorAware;
+  private AuditorAware<Long> auditorAware;
 
   // for testing purposes
-  public void setAuditorAware(AuditorAware<User> auditorAware) {
+  public void setAuditorAware(AuditorAware<Long> auditorAware) {
     this.auditorAware = auditorAware;
   }
 

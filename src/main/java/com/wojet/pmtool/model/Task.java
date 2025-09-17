@@ -26,6 +26,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 // import com.vladmihalcea.hibernate.type.ltree.LTreeType;
 // import com.vladmihalcea.hibernate.type.ltree.LTree;
@@ -91,11 +93,17 @@ public class Task extends Auditable {
   @Column(columnDefinition = "text")
   private String description;
 
-  private LocalDateTime startDate;
-  private LocalDateTime endDate;
+  @JsonFormat(pattern = "yyyy-MM-dd")
+  private LocalDate startDate;
 
-  private LocalDateTime actualStartDate;
-  private LocalDateTime actualEndDate;
+  @JsonFormat(pattern = "yyyy-MM-dd")
+  private LocalDate endDate;
+
+  @JsonFormat(pattern = "yyyy-MM-dd")
+  private LocalDate actualStartDate;
+
+  @JsonFormat(pattern = "yyyy-MM-dd")
+  private LocalDate actualEndDate;
 
   @Column(nullable = false)
   private Double budget = 0.0;

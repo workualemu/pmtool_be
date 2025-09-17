@@ -14,13 +14,13 @@ import com.wojet.pmtool.repository.UserRepository;
 import com.wojet.pmtool.security.service.UserDetailsImpl;
 
 @Component
-public class SpringSecurityAuditorAware implements AuditorAware<User> {
+public class SpringSecurityAuditorAware implements AuditorAware<Long> {
 
     @Autowired
-    private UserRepository userRepository;
+    // private UserRepository userRepository;
 
     @Override
-    public Optional<User> getCurrentAuditor() {
+    public Optional<Long> getCurrentAuditor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()
@@ -30,10 +30,14 @@ public class SpringSecurityAuditorAware implements AuditorAware<User> {
 
         Object principal = authentication.getPrincipal();
 
-        if (principal instanceof UserDetailsImpl) {
-            Long userId = ((UserDetailsImpl) principal).getId();
-            return userRepository.findById(userId);
+        if (principal instanceof UserDetailsImpl u) {
+            return Optional.ofNullable(u.getId());
         }
+
+        // if (principal instanceof UserDetailsImpl) {
+        //     Long userId = ((UserDetailsImpl) principal).getId();
+        //     return userRepository.findById(userId);
+        // }
 
         return Optional.empty();
 

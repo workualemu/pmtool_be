@@ -1,5 +1,6 @@
 package com.wojet.pmtool.payload;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,10 +40,10 @@ public class TaskDTO extends AuditableDTO {
   private Set<Long> tagIds = new HashSet<>();
   private Set<String> tagLabels = new HashSet<>();
 
-  private LocalDateTime startDate;
-  private LocalDateTime endDate;
-  private LocalDateTime actualStartDate;
-  private LocalDateTime actualEndDate;
+  private LocalDate startDate;
+  private LocalDate endDate;
+  private LocalDate actualStartDate;
+  private LocalDate actualEndDate;
   private Double budget = 0.0;
   private Double expense = 0.0; 
   private Integer duration = 1;

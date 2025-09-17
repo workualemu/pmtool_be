@@ -30,7 +30,7 @@ public class ClientServiceImpl implements ClientService {
     private ClientRepository clientRepository;
 
     @Autowired
-    private AuditorAware<User> auditorAware;
+    private AuditorAware<Long> auditorAware;
 
     @Autowired
     private ModelMapper modelMapper;

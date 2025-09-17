@@ -11,16 +11,12 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "task_statuses")
+@Table(name = "project_statuses")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class TaskStatus extends Auditable {
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "project_id")
-  private Project project;
+public class ProjectStatus extends Auditable {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "client_id")
@@ -33,8 +29,8 @@ public class TaskStatus extends Auditable {
   @Size(max = 255)
   private String value;
 
-  @Column(nullable = false, name = "kanban_list_rank")
-  private Integer kanbanListRank = 1;
+  @Column(nullable = false, name = "display_order")
+  private Integer displayOrder = 1;
 
   // Color stored as HEX string (recommended, see previous answer)
   @Pattern(regexp = "^#([A-Fa-f0-9]{6})$", message = "Color must be a valid HEX value like #RRGGBB")
