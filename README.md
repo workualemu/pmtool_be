@@ -1,4 +1,4 @@
-# PMTool
+# Wojet Project Management System (Under development)
 
 [![Java](https://img.shields.io/badge/Java-21-007396)](#)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.5-6DB33F)](#)
