@@ -45,3 +45,103 @@ A modern, multi-tenant **Project Management Tool**. Backend: **Java 21 + Spring 
 
 ## Architecture
 
+---
+
+## Tech Stack
+
+| Area        | Choice                                  |
+|-------------|------------------------------------------|
+| Runtime     | Java 21, Maven 3.9+                      |
+| Framework   | Spring Boot 3.4.x (Web, Security, JPA)   |
+| Database    | PostgreSQL 15+                           |
+| ORM         | Hibernate/JPA                            |
+| Auth        | JWT (HttpOnly cookie)                    |
+| Utils       | Lombok                                   |
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- JDK 21  
+- Maven 3.9+  
+- PostgreSQL 15+ (or Docker)
+
+### Configuration
+
+Create or edit `src/main/resources/application.yml`:
+
+```yaml
+spring:
+  application:
+    name: <my-project>
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mydb
+    username: <uname>
+    password: <pwd>
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update 
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
+
+app:
+  jwtCookieName: <cookie>
+  jwt:
+    jwtSecret: <change-me-please>
+    expirationMs: <86400000>
+```
+docker-compose.yml for Postgres:
+```yaml
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: <puser>
+      POSTGRES_PASSWORD: <ppwd>
+      POSTGRES_DB: <db>
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
+```
+### Run
+```yml
+# Start DB (optional)
+docker compose up -d
+
+# Backend (dev)
+mvn spring-boot:run
+```
+## API Overview
+
+### Base URL
+```yml
+http://localhost:8080/api
+```
+### Auth
+```yml
+POST /auth/login 
+POST /auth/logout
+GET /auth/me
+GET /auth/register
+```
+
+
