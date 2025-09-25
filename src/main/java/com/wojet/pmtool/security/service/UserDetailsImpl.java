@@ -49,7 +49,7 @@ public class UserDetailsImpl implements UserDetails{
 
     public static UserDetailsImpl build(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRoleName().name()))
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
         Client client = user.getClient();
         Project recentProject = user.getRecentProject();

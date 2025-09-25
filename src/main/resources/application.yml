@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: wojetpmtool
+  datasource:
+    url: jdbc:postgresql://localhost:5432/wojetpm_dev
+    username: postgres
+    password: postgres
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: false
+  main:
+    allow-bean-definition-overriding: true
+  app:
+    jwtCookieName: wojetpmtool
+    jwt:
+      jwtSecret: mySecretKey123912809djhjdhfjdhdfjdfjdhsjfturueruewjjkrekhrthjhjdhfjsdhjfhdsf
+      expirationMs: 86400000
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql: TRACE
+
+server:
+  port: 8080
+
+pmtool:
+  system-user-password: ${SYSTEM_USER_PASSWORD:SystemUser}
+  client-admin-password: ${SYSTEM_USER_PASSWORD:SuperUser}

@@ -7,11 +7,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.wojet.pmtool.model.audit.Auditable;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -32,6 +34,10 @@ public class Client extends Auditable {
     @NotBlank
     @Size(min = 2, message = "Client name must be at least 2 characters long")
     private String name;
+
+    @Email
+    @Column(nullable = true, unique = true)
+    private String email;
 
     private String description;
 

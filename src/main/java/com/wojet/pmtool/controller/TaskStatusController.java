@@ -26,7 +26,7 @@ public class TaskStatusController {
   @Autowired
   private TaskStatusService taskStatusService;
 
-  @GetMapping("/{projectId}/taskstatuses")
+  @GetMapping("/{projectId}/task-statuses")
   public PagedResponse<TaskStatusDTO> getByProject(
       @PathVariable Long projectId,
       @RequestParam(name = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
@@ -36,14 +36,14 @@ public class TaskStatusController {
     return taskStatusService.getByProject(projectId, pageNumber, pageSize, sortBy, sortDir);
   }
 
-  @PostMapping("/{projectId}/taskstatus")
+  @PostMapping("/{projectId}/task-status")
   public ResponseEntity<TaskStatusDTO> create(
       @RequestBody TaskStatusDTO taskStatusDTO,
       @PathVariable Long projectId) {
     return new ResponseEntity<>(taskStatusService.createTaskStatus(projectId, taskStatusDTO), HttpStatus.CREATED);
   }
 
-  @PutMapping("/taskstatuses/{taskStatusId}")
+  @PutMapping("/task-statuses/{taskStatusId}")
   public ResponseEntity<TaskStatusDTO> update(
       @Valid @PathVariable Long taskStatusId,
       @RequestBody TaskStatusDTO taskStatusDTO) {
@@ -51,13 +51,13 @@ public class TaskStatusController {
     return new ResponseEntity<>(updatedTag, HttpStatus.OK);
   }
 
-  @DeleteMapping("/taskstatuses/{taskStatusId}")
+  @DeleteMapping("/task-statuses/{taskStatusId}")
   public ResponseEntity<TaskStatusDTO> delete(
       @Valid @PathVariable Long taskStatusId) {
     return new ResponseEntity<>(taskStatusService.deleteById(taskStatusId), HttpStatus.OK);
   }
 
-  @DeleteMapping("/taskstatuses/{projectId}/all")
+  @DeleteMapping("/task-statuses/{projectId}/all")
   public String deleteByProject(@PathVariable Long projectId) {
     return taskStatusService.deleteByProjectId(projectId);
   }

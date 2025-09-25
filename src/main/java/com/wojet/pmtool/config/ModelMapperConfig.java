@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.wojet.pmtool.model.Client;
 import com.wojet.pmtool.model.Project;
+import com.wojet.pmtool.model.Role;
 import com.wojet.pmtool.model.Tag;
 import com.wojet.pmtool.model.Task;
 import com.wojet.pmtool.model.TaskPriority;
@@ -16,6 +17,7 @@ import com.wojet.pmtool.model.User;
 import com.wojet.pmtool.model.audit.Auditable;
 import com.wojet.pmtool.payload.ClientDTO;
 import com.wojet.pmtool.payload.ProjectDTO;
+import com.wojet.pmtool.payload.RoleDTO;
 import com.wojet.pmtool.payload.TagDTO;
 import com.wojet.pmtool.payload.TaskDTO;
 import com.wojet.pmtool.payload.TaskPriorityDTO;
@@ -75,6 +77,7 @@ public class ModelMapperConfig {
     registerAuditMappings(mapper, TaskPriority.class, TaskPriorityDTO.class);
     registerAuditMappings(mapper, TaskStatus.class, TaskStatusDTO.class);
     registerAuditMappings(mapper, Task.class, TaskDTO.class);
+    registerAuditMappings(mapper, Role.class, RoleDTO.class);
 
     mapper.addConverter(userToIdConverter, User.class, Long.class);
     return mapper;

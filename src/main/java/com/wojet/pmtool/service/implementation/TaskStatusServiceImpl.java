@@ -95,12 +95,12 @@ public class TaskStatusServiceImpl extends GenericCrudService<TaskStatus, TaskSt
    * Create a new project with associated client
    */
   @Override
-  public TaskStatusDTO updateTaskStatus(Long TaskStatusId, TaskStatusDTO TaskStatusDTO) {
-    TaskStatus existingTaskStatus = taskStatusRepository.findById(TaskStatusId)
-        .orElseThrow(() -> new ResourceNotFoundException("TaskStatus", "id", TaskStatusId));
+  public TaskStatusDTO updateTaskStatus(Long taskStatusId, TaskStatusDTO taskStatusDTO) {
+    TaskStatus existingTaskStatus = taskStatusRepository.findById(taskStatusId)
+        .orElseThrow(() -> new ResourceNotFoundException("TaskStatus", "id", taskStatusId));
 
-    Long projectId = TaskStatusDTO.getProjectId() == null ? existingTaskStatus.getProject().getId()
-        : TaskStatusDTO.getProjectId();
+    Long projectId = taskStatusDTO.getProjectId() == null ? existingTaskStatus.getProject().getId()
+        : taskStatusDTO.getProjectId();
     Project project = projectRepository.findById(
         projectId)
         .orElseThrow(() -> new ResourceNotFoundException("Project", "id", projectId));
@@ -114,7 +114,7 @@ public class TaskStatusServiceImpl extends GenericCrudService<TaskStatus, TaskSt
       TaskStatus.setClient(client);
     };
 
-    return updateWithAssociations(TaskStatusId, TaskStatusDTO, associations);
+    return updateWithAssociations(taskStatusId, taskStatusDTO, associations);
   }
 
   @Override

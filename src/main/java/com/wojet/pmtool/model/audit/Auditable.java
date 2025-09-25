@@ -34,11 +34,11 @@ public abstract class Auditable {
     private Instant updatedAt;
 
     @CreatedBy
-    @Column(name = "created_by", nullable = false, updatable = false)
+    @Column(name = "created_by", nullable = true, updatable = false)
     private Long createdById;
 
     @LastModifiedBy
-    @Column(name = "updated_by", nullable = false)
+    @Column(name = "updated_by", nullable = true)
     private Long updatedById;
 
     @ManyToOne(fetch = FetchType.LAZY)

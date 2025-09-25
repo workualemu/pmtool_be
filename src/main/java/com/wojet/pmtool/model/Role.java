@@ -1,39 +1,34 @@
 package com.wojet.pmtool.model;
 
+import com.wojet.pmtool.model.audit.Auditable;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "roles")
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class Role {
+@AllArgsConstructor
+public class Role extends Auditable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(name = "name")
+    private String name;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20, name = "role_name")
-    private AppRole roleName;
+    @Column(name = "description")
+    private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
-    
-    public Role(AppRole roleName) {
-        this.roleName = roleName;
-    }
 
 }

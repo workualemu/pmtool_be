@@ -1,10 +1,12 @@
 package com.wojet.pmtool.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wojet.pmtool.model.audit.Auditable;
 
@@ -33,17 +35,30 @@ import lombok.NoArgsConstructor;
 public class Project extends Auditable {
 
     @NotBlank
-    @Size(min = 2, message = "Client name must be at least 2 characters long")
+    @Size(min = 2, message = "Project title must be at least 2 characters long")
     private String title;
 
     private String description;
 
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate startDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate actualStartDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate actualEndDate;
 
     @ManyToMany
     @JoinTable(name = "project_members", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> members;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_status_id")
+    private ProjectStatus projectStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore

@@ -85,29 +85,32 @@ public class AuthController {
         Set<Role> roles = new HashSet<>();
 
         if(strRoles == null) {
-            Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
+            Role userRole = roleRepository.findByName(AppRole.ROLE_USER.name())
                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(userRole);
         } else{
             strRoles.forEach(role -> {
                 switch(role) {
                     case "sys_admin" -> {
-                        Role mod_role = roleRepository.findByRoleName(AppRole.ROLE_SYS_ADMIN)
+                        Role mod_role = roleRepository.findByName(AppRole.ROLE_SYS_ADMIN.name())
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(mod_role);
                     }
                     case "client_admin" -> {
-                        Role mod_role = roleRepository.findByRoleName(AppRole.ROLE_CLIENT_ADMIN)
+                        Role mod_role = roleRepository.findByName(AppRole.ROLE_CLIENT_ADMIN
+                                .name())
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(mod_role);
                     }
                     case "project_manager" -> {
-                        Role mod_role = roleRepository.findByRoleName(AppRole.ROLE_PROJECT_MANAGER)
+                        Role mod_role = roleRepository.findByName(AppRole.ROLE_PROJECT_MANAGER
+                                .name())
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(mod_role);
                     }
                     default -> {
-                        Role mod_role = roleRepository.findByRoleName(AppRole.ROLE_USER)
+                        Role mod_role = roleRepository.findByName(AppRole.ROLE_USER
+                                .name())
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(mod_role);
                     }

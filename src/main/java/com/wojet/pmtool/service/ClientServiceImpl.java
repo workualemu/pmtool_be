@@ -8,32 +8,61 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.wojet.pmtool.exception.APIException;
 import com.wojet.pmtool.exception.ResourceNotFoundException;
 import com.wojet.pmtool.model.Client;
+import com.wojet.pmtool.model.Role;
 import com.wojet.pmtool.model.User;
 import com.wojet.pmtool.payload.ClientDTO;
 import com.wojet.pmtool.payload.PagedResponse;
 import com.wojet.pmtool.repository.ClientRepository;
+import com.wojet.pmtool.repository.RoleRepository;
+import com.wojet.pmtool.repository.UserRepository;
+import com.wojet.pmtool.security.service.UserDetailsImpl;
+import com.wojet.pmtool.util.AuthFacade;
 
 @Service
 public class ClientServiceImpl implements ClientService {
 
+    private final JdbcTemplate jdbc;
+    private final Environment env;
+    private final PasswordEncoder encoder;
+
     @Autowired
     private ClientRepository clientRepository;
+
+    @Autowired
+    AuthFacade auth;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private AuditorAware<Long> auditorAware;
 
     @Autowired
     private ModelMapper modelMapper;
+
+    public ClientServiceImpl(Environment env, JdbcTemplate jdbc, PasswordEncoder encoder) {
+        this.jdbc = jdbc;
+        this.env = env;
+        this.encoder = encoder;
+    }
 
     ModelMapper mapper = new ModelMapper();
 
@@ -103,6 +132,9 @@ public class ClientServiceImpl implements ClientService {
         applyAuditOnCreate(client, auditorAware);
 
         Client savedClient = clientRepository.save(client);
+
+        createClientAdminUser(client);
+
         return modelMapper.map(savedClient, ClientDTO.class);
 
     }
@@ -150,6 +182,38 @@ public class ClientServiceImpl implements ClientService {
     public String deleteAllClients() {
         clientRepository.deleteAll();
         return "All clients deleted successfully !!!";
+    }
+
+    @Transactional
+    public void createClientAdminUser(Client client) {
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) auth.currentUser();
+
+        jdbc.update("""
+                  INSERT INTO roles (name, description, client_id, created_at, updated_at, created_by, updated_by)
+                  VALUES ('CLIENT_ADMIN', 'Client Administrator', ?, NOW(), NOW(), ?, ?)
+                  ON CONFLICT (id) DO NOTHING
+                """, client.getId(), userDetails.getId(), userDetails.getId());
+
+        Role role = roleRepository.findByClientIdAndName(client.getId(), "CLIENT_ADMIN").orElseThrow(
+                () -> new ResourceNotFoundException("Role", "name", "CLIENT_ADMIN"));
+
+        jdbc.update("""
+                INSERT INTO users (email, password, first_name, last_name, client_id)
+                VALUES (?, '', ?, '', ?)
+                ON CONFLICT (id) DO NOTHING
+                """, client.getEmail(), client.getName(), client.getId());
+
+        User clientUser = userRepository.findByEmail(client.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", client.getEmail()));
+
+        clientUser.getRoles().add(role);
+        var currentPwd = clientUser.getPassword();
+        if (currentPwd == null || currentPwd.isBlank()) {
+            String raw = env.getProperty("pmtool.client-admin-password", "SuperUser");
+            clientUser.setPassword(encoder.encode(raw));
+            userRepository.save(clientUser);
+        }
     }
 
 }
