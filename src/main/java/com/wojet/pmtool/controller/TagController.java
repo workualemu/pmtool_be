@@ -20,13 +20,13 @@ import com.wojet.pmtool.service.TagService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/client/admin")
+@RequestMapping("/api/v1/tags")
 public class TagController {
 
     @Autowired
     private TagService tagService;
 
-    @GetMapping("/{projectId}/tags")
+    @GetMapping("/project/{projectId}")
     public PagedResponse<TagDTO> getTagsByProject(
             @PathVariable Long projectId,
             @RequestParam(name = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
@@ -36,14 +36,14 @@ public class TagController {
         return tagService.getTagsByProject(projectId, pageNumber, pageSize, sortBy, sortDir);
     }
 
-    @PostMapping("/{projectId}/tag")
+    @PostMapping("/project/{projectId}")
     public ResponseEntity<TagDTO> addTag(
             @RequestBody TagDTO tagDto,
             @PathVariable Long projectId) {
         return new ResponseEntity<>(tagService.createTag(projectId, tagDto), HttpStatus.CREATED);
     }
 
-    @PutMapping("/tags/{tagId}")
+    @PutMapping("/{tagId}")
     public ResponseEntity<TagDTO> updateTag(
             @Valid @PathVariable Long tagId,
             @RequestBody TagDTO tagDTO) {
@@ -51,13 +51,13 @@ public class TagController {
         return new ResponseEntity<>(updatedTag, HttpStatus.OK);
     }
 
-    @DeleteMapping("/tags/{tagId}")
+    @DeleteMapping("/{tagId}")
     public ResponseEntity<TagDTO> deleteTag(
             @Valid @PathVariable Long tagId) {
         return new ResponseEntity<>(tagService.deleteById(tagId), HttpStatus.OK);
     }
 
-    @DeleteMapping("/tags/{projectId}/all")
+    @DeleteMapping("/project/{projectId}")
     public String deleteAllTagsByProject(@PathVariable Long projectId) {
         return tagService.deleteByProjectId(projectId);
     }

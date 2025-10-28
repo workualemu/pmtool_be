@@ -70,6 +70,10 @@ public class Task extends Auditable {
   @JoinColumn(name = "parent")
   private Task parent;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "task_level_id")
+  private TaskLevel taskLevel;
+
   // ManyToMany
 
   @ManyToMany(fetch = FetchType.LAZY)
@@ -125,9 +129,6 @@ public class Task extends Auditable {
 
   @Size(max = 255)
   private String type;
-
-  @Column(nullable = false)
-  private Integer level = 0;
 
   @Column(nullable = false)
   private Boolean isStarred = false;

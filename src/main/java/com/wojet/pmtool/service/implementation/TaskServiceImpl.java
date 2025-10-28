@@ -1,16 +1,23 @@
 package com.wojet.pmtool.service.implementation;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.wojet.pmtool.api.TaskFilterRequest;
 import com.wojet.pmtool.exception.APIException;
 import com.wojet.pmtool.exception.ResourceNotFoundException;
 import com.wojet.pmtool.model.Client;
@@ -20,7 +27,9 @@ import com.wojet.pmtool.payload.PagedResponse;
 import com.wojet.pmtool.payload.TaskDTO;
 import com.wojet.pmtool.repository.ClientRepository;
 import com.wojet.pmtool.repository.ProjectRepository;
+import com.wojet.pmtool.repository.TaskLevelRepository;
 import com.wojet.pmtool.repository.TaskRepository;
+import com.wojet.pmtool.repository.specification.TaskSpecifications;
 import com.wojet.pmtool.service.GenericCrudService;
 import com.wojet.pmtool.service.TaskService;
 
@@ -30,6 +39,9 @@ public class TaskServiceImpl extends GenericCrudService<Task, TaskDTO, TaskRepos
 
   @Autowired
   private TaskRepository taskRepository;
+
+  @Autowired
+  private TaskLevelRepository taskLevelRepository;
 
   @Autowired
   private ProjectRepository projectRepository;
@@ -86,7 +98,6 @@ public class TaskServiceImpl extends GenericCrudService<Task, TaskDTO, TaskRepos
       Task.setProject(project);
       Task.setClient(client);
     };
-    
 
     return createWithAssociations(taskDTO, associations);
   }
@@ -155,4 +166,53 @@ public class TaskServiceImpl extends GenericCrudService<Task, TaskDTO, TaskRepos
     return existing != null && !existing.getId().equals(id);
   }
 
+  @Transactional(readOnly = true)
+  public List<TaskDTO> filter(TaskFilterRequest req) {
+    Objects.requireNonNull(req.projectId(), "projectId is required");
+
+    // 1) Find matches (scoped to one project)
+    var spec = TaskSpecifications.byFilter(
+        req.projectId(),
+        req.levels(),
+        req.tagIds(),
+        req.statuses(),
+        req.priorities(),
+        req.titleContains(),
+        req.assignedToId(),
+        req.reportedById());
+
+    List<Task> matches = taskRepository.findAll(spec);
+
+    if (!req.includeAncestors()) {
+      return toDtos(matches, Set.copyOf(ids(matches)), Set.of());
+    }
+
+    // 2) Fetch matches + ancestors via Postgres recursive CTE
+    Long[] matchIdsArray = ids(matches).toArray(Long[]::new);
+    List<Task> context = matchIdsArray.length == 0
+        ? List.of() // nothing matched; return empty
+        : taskRepository.fetchMatchesPlusAncestors(req.projectId(), matchIdsArray);
+
+    // 3) Mark which ones are matches vs only-ancestors
+    Set<Long> matchIdSet = Set.copyOf(ids(matches));
+    return toDtos(context, matchIdSet,
+        context.stream().map(Task::getId)
+            .filter(id -> !matchIdSet.contains(id))
+            .collect(Collectors.toSet()));
+  }
+
+  private Set<Long> ids(List<Task> tasks) {
+    return tasks.stream().map(Task::getId).collect(Collectors.toCollection(LinkedHashSet::new));
+  }
+
+  private List<TaskDTO> toDtos(List<Task> rows, Set<Long> matchIds, Set<Long> ancestorOnly) {
+    return rows.stream()
+        .map(t -> {
+          TaskDTO dto = modelMapper.map(t, TaskDTO.class);
+          dto.setMatch(matchIds.contains(t.getId()));
+          dto.setAncestor(ancestorOnly.contains(t.getId()));
+          return dto;
+        })
+        .toList();
+  }
 }

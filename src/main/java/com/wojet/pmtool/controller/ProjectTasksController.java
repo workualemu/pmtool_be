@@ -18,14 +18,14 @@ import com.wojet.pmtool.payload.TaskDTO;
 import com.wojet.pmtool.service.TaskService;
 
 @RestController
-@RequestMapping("/api/v1/tasks")
-public class TaskController {
+@RequestMapping("/api/v1/projects/{projectId}/tasks")
+public class ProjectTasksController {
 
   @Autowired
   private TaskService taskService;
 
-  @GetMapping("/project/{projectId}")
-  public PagedResponse<TaskDTO> getByProject(
+  @GetMapping()
+  public PagedResponse<TaskDTO> getTasksByProject(
       @PathVariable Long projectId,
       @RequestParam(name = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
       @RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize,
@@ -34,30 +34,15 @@ public class TaskController {
     return taskService.getTasksByProject(projectId, pageNumber, pageSize, sortBy, sortDir);
   }
 
-  @PostMapping("/project/{projectId}")
-  public ResponseEntity<TaskDTO> createTask(
-      @RequestBody TaskDTO taskDTO,
+  @PostMapping()
+  public ResponseEntity<TaskDTO> addTaskToProject(
+      @RequestBody TaskDTO taskDto,
       @PathVariable Long projectId) {
-    return new ResponseEntity<>(taskService.createTask(projectId, taskDTO), HttpStatus.CREATED);
+    return new ResponseEntity<>(taskService.createTask(projectId, taskDto), HttpStatus.CREATED);
   }
 
-  @PutMapping("/{taskId}")
-  public ResponseEntity<TaskDTO> updateTask(
-      @PathVariable("taskId") Long taskId,
-      @RequestBody TaskDTO taskDTO) {
-    TaskDTO updatedTask = taskService.updateTask(taskId, taskDTO);
-    return new ResponseEntity<>(updatedTask, HttpStatus.OK);
-  }
-
-  @DeleteMapping("/{taskId}")
-  public ResponseEntity<TaskDTO> deleteTask(
-      @PathVariable("taskId") Long taskId) {
-    return new ResponseEntity<>(taskService.deleteById(taskId), HttpStatus.OK);
-  }
-
-  @DeleteMapping("/project/{projectId}")
-  public String deleteAllTagsByProject(@PathVariable Long projectId) {
+  @DeleteMapping()
+  public String deleteAllTasksByProject(@PathVariable Long projectId) {
     return taskService.deleteByProjectId(projectId);
   }
-
 }
