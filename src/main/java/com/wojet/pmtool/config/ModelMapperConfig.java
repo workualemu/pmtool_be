@@ -1,11 +1,13 @@
 package com.wojet.pmtool.config;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
-import org.modelmapper.PropertyMap;
 import org.modelmapper.spi.MappingContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -80,6 +82,18 @@ public class ModelMapperConfig {
     return src != null ? src.getValue() : null;
   };
 
+  private final Converter<Set<Tag>, Set<Long>> tagSetToIds = context -> {
+    Set<Tag> tags = context.getSource();
+    if (tags == null) return Set.of();
+    return tags.stream().map(Tag::getId).collect(Collectors.toCollection(LinkedHashSet::new));
+  };
+
+  private final Converter<Set<Tag>, Set<String>> tagSetToLabels = context -> {
+    Set<Tag> tags = context.getSource();
+    if (tags == null) return Set.of();
+    return tags.stream().map(Tag::getLabel).collect(Collectors.toCollection(LinkedHashSet::new));
+  };
+
   private <S extends Auditable, D extends AuditableDTO> void registerAuditMappings(ModelMapper mapper, Class<S> source,
       Class<D> dest) {
     mapper.typeMap(source, dest).addMappings(mapping -> {
@@ -125,11 +139,13 @@ public class ModelMapperConfig {
       m.using(taskLevelToIdConverter).map(Task::getTaskLevel, TaskDTO::setTaskLevelId);
       m.using(taskStatusToIdConverter).map(Task::getTaskStatus, TaskDTO::setTaskStatusId);
       m.using(taskPriorityToIdConverter).map(Task::getTaskPriority, TaskDTO::setTaskPriorityId);
+      m.using(tagSetToIds).map(Task::getTags, TaskDTO::setTagIds);
 
       // names/values (only if these getters exist on your entities & setters on DTO)
       m.using(taskLevelToNameConverter).map(Task::getTaskLevel, TaskDTO::setTaskLevelName);
       m.using(taskStatusToValueConverter).map(Task::getTaskStatus, TaskDTO::setTaskStatusValue);
       m.using(taskPriorityToValueConverter).map(Task::getTaskPriority, TaskDTO::setTaskPriorityValue);
+      m.using(tagSetToLabels).map(Task::getTags, TaskDTO::setTagLabels);
     });
 
     mapper.addConverter(taskDtoToEntityConverter);

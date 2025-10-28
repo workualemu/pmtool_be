@@ -1,11 +1,10 @@
 package com.wojet.pmtool.payload;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
-import com.wojet.pmtool.model.TaskLevel;
 import com.wojet.pmtool.payload.audit.AuditableDTO;
 
 import lombok.AllArgsConstructor;
@@ -33,6 +32,7 @@ public class TaskDTO extends AuditableDTO {
   private String reportedByName;
   private Long parentId;
   private String parentTitle;
+  @JsonAlias({ "taskTag", "tagIds" })
   private Set<Long> tagIds = new HashSet<>();
   private Set<String> tagLabels = new HashSet<>();
 

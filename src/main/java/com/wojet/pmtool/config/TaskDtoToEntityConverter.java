@@ -1,4 +1,5 @@
 package com.wojet.pmtool.config;
+
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.stereotype.Component;
@@ -8,6 +9,11 @@ import com.wojet.pmtool.payload.TaskDTO;
 import com.wojet.pmtool.repository.TaskLevelRepository;
 import com.wojet.pmtool.repository.TaskPriorityRepository;
 import com.wojet.pmtool.repository.TaskStatusRepository;
+import com.wojet.pmtool.repository.TagRepository;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Collections;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +24,7 @@ public class TaskDtoToEntityConverter implements Converter<TaskDTO, Task> {
   private final TaskLevelRepository taskLevelRepo;
   private final TaskStatusRepository taskStatusRepo;
   private final TaskPriorityRepository taskPriorityRepo;
+  private final TagRepository tagRepository;
 
   @Override
   public Task convert(MappingContext<TaskDTO, Task> ctx) {
@@ -44,6 +51,17 @@ public class TaskDtoToEntityConverter implements Converter<TaskDTO, Task> {
       dest.setTaskPriority(taskPriorityRepo.getReferenceById(src.getTaskPriorityId()));
     } else {
       dest.setTaskPriority(null);
+    }
+
+    // map tags (if provided)
+    if (src.getTagIds() != null) {
+      if (src.getTagIds().isEmpty()) {
+        dest.setTags(new HashSet<>());
+      } else {
+        List<com.wojet.pmtool.model.Tag> tags = tagRepository.findAllById(src.getTagIds());
+        // if strict existence check is desired, compare sizes and throw if mismatch
+        dest.setTags(new HashSet<>(tags));
+      }
     }
 
     return dest;
