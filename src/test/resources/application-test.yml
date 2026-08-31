@@ -4,3 +4,7 @@ spring:
       ddl-auto: validate
   flyway:
     enabled: true
+pmtool:
+  security:
+    access-secret: test-only-access-secret-that-is-at-least-thirty-two-bytes
+    secure-cookies: false

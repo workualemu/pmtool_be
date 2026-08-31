@@ -18,11 +18,6 @@ spring:
     enabled: true
   main:
     allow-bean-definition-overriding: true
-  app:
-    jwtCookieName: wojetpmtool
-    jwt:
-      jwtSecret: ${JWT_SECRET}
-      expirationMs: 86400000
   jackson:
     serialization:
       write-dates-as-timestamps: false
@@ -39,5 +34,10 @@ server:
   port: 8080
 
 pmtool:
+  security:
+    access-secret: ${ACCESS_TOKEN_SECRET}
+    access-lifetime: PT15M
+    refresh-lifetime: PT336H
+    secure-cookies: ${SECURE_COOKIES:true}
   system-user-password: ${SYSTEM_USER_PASSWORD}
   client-admin-password: ${CLIENT_ADMIN_PASSWORD}
