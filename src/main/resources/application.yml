@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: wojetpmtool
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+  main:
+    allow-bean-definition-overriding: true
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql: TRACE
+
+server:
+  port: 8080
+
+pmtool:
+  security:
+    access-secret: ${ACCESS_TOKEN_SECRET}
+    access-lifetime: PT15M
+    refresh-lifetime: PT336H
+    secure-cookies: ${SECURE_COOKIES:true}
+  system-user-password: ${SYSTEM_USER_PASSWORD}
+  client-admin-password: ${CLIENT_ADMIN_PASSWORD}

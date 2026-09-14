@@ -9,8 +9,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.wojet.pmtool.payload.APIResponse;
-
 @RestControllerAdvice
 public class WojetExceptionHandler {
 
@@ -24,16 +22,12 @@ public class WojetExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<APIResponse> wojetResourceNotFoundException(ResourceNotFoundException e) {
-        String message = e.getMessage();
-        APIResponse apiResponse = new APIResponse(message, false);
-        return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+    public ResponseEntity<Map<String, Object>> wojetResourceNotFoundException(ResourceNotFoundException e) {
+        return new ResponseEntity<>(Map.of("message", e.getMessage(), "success", false), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(APIException.class)
-    public ResponseEntity<APIResponse> wojetApiException(APIException e) {
-        String message = e.getMessage();
-        APIResponse apiResponse = new APIResponse(message, false);
-        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Map<String, Object>> wojetApiException(APIException e) {
+        return new ResponseEntity<>(Map.of("message", e.getMessage(), "success", false), HttpStatus.BAD_REQUEST);
     }
 }
